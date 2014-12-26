@@ -1,6 +1,5 @@
-(ns cardgame.french-deck
-  "The french deck"
-  (:gen-class))
+(ns cardgame.decks.french
+  "The french deck")
 
 (def values "A23456789TJQK")
 (def suits "♠♡♢♣")
@@ -33,7 +32,6 @@
             "Q" 12
             "K" 13
             (read-string val))))
-
 
 (defn get-deck []
     (map #(reduce str %) (cart (list suits values))))
