@@ -16,17 +16,25 @@ FIXME: explanation
 
 FIXME: listing of options this app accepts.
 
-## Examples
 
-...
+## Commands
 
-### Bugs
+### Local commands
 
-...
+Upon startup the engine starts to listen a specific default port.
 
-### Any Other Sections
-### That You Think
-### Might be Useful
+    > create-game [name] [number-of-players] [decktype]
+
+    gamename@localhost> deal [number-of-cards]
+Dealing is allowed only if all players have joined. Without `number-of-cards`, all of the cards are dealt. (How to specify cards dealt on table?)
+
+
+### Remote commands
+
+    > connect [host]
+    @host> list-games
+    @host> join-game [name]
+
 
 ## License
 
