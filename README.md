@@ -1,21 +1,10 @@
 # cardgame
 
-FIXME: description
-
-## Installation
-
-Download from http://example.com/FIXME.
+Card game platform for playing any card game remotely. Does not enforce any rules (yet), so you can only play with trusted players. You shuld *never* gamble on this platform.
 
 ## Usage
 
-FIXME: explanation
-
-    $ java -jar cardgame-0.1.0-standalone.jar [args]
-
-## Options
-
-FIXME: listing of options this app accepts.
-
+    $ java -jar cardgame.jar [username]
 
 ## Commands
 
@@ -38,7 +27,4 @@ Dealing is allowed only if all players have joined. Without `number-of-cards`, a
 
 ## License
 
-Copyright © 2014 FIXME
-
-Distributed under the Eclipse Public License either version 1.0 or (at
-your option) any later version.
+Card game source code is licensed with the MIT License, see LICENSE.txt
