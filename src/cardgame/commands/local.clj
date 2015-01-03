@@ -1,4 +1,4 @@
-(ns cardgame.commands
+(ns cardgame.commands.local
     "Commands that can be issued in the prompt. The first parameter of each command is the current game state. Each command should return the new state."
     (:require [cardgame.decks.core :as decks]))
 
@@ -6,6 +6,7 @@
     (let [deck (decks/get-deck decktype)]
         (when deck
             {:name name
+             :prompt-prefix (str name "@local")
              :playercount (read-string players)
              :players (list (:username state)) ; maybe username@host ?
              :joined 1
@@ -21,6 +22,7 @@
         []
         (subvec v n)))
 
+; TODO: select cards for each player one-by-one
 (defn deal [state cardcount]
     (if-not (game-full? state)
         (println "Waiting for more players. Can't deal cards yet.")
@@ -30,7 +32,7 @@
             (println "Deal " dealt-cards)
             {:deck rest-deck})))
 
-; join from remote
+; TODO join from remote
 (defn join [state username]
     (if (game-full? state)
         (println "Game full. Can not join.")
@@ -43,7 +45,7 @@
 
 (defn execute [command params]
     "Execute given command if it is found in local namespace with a correct arity. Return the new state."
-    (let [command-fun (resolve (symbol "cardgame.commands" command))
+    (let [command-fun (resolve (symbol "cardgame.commands.local" command))
           arities (->> command-fun meta :arglists (map count))]
         (if-not command-fun
             (println (str "Command '" command "' not found."))

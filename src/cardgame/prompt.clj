@@ -1,5 +1,5 @@
 (ns cardgame.prompt
-    (:require [cardgame.commands :as cmd]
+    (:require [cardgame.commands.local :as cmd]
               [cardgame.state :as state]))
 
 (def prompt-symbol "> ")

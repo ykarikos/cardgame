@@ -10,5 +10,4 @@
   [& args]
   (if (< (count args) 1)
     (println usage)
-    (let [state (state/change-state {:username (first args)})]
-        (prompt/prompt state))))
+    (prompt/prompt (state/change-state {:username (first args)}))))
