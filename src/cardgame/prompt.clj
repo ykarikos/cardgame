@@ -16,7 +16,7 @@
     (let [parts (parse-command (read-line))
           command (first parts)
           params (cons state (rest parts))
-          new-state (cmd/execute command params)]
+          new-state (if (empty? command) state (cmd/execute command params))]
         (when-not (= "quit" command)
             (recur (state/change-state new-state)))))
 
