@@ -6,7 +6,16 @@
               [cardgame.network.client :as client]))
 
 ; TODO
-; (def usage "")
+(defn help [state]
+  (println "Commands:
+- create-game gamename playercount decktype
+- join hostname
+- deal cardcount
+- quit
+- help
+
+Supported deck types: french")
+  {})
 
 (defn create-game [state gamename players decktype]
     (let [deck (decks/get-deck decktype)]

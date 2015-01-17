@@ -1,6 +1,6 @@
 # cardgame
 
-Card game platform for playing any card game remotely. Does not enforce any rules (yet), so you can only play with trusted players. You shuld *never* gamble on this platform.
+Card game platform for playing any card game remotely. Does not enforce any rules (yet), so you can only play with trusted players. You should *never* gamble on this platform.
 
 ## Usage
 
