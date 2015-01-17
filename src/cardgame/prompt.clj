@@ -2,8 +2,6 @@
     (:require [cardgame.commands.local :as cmd]
               [cardgame.state :as state]))
 
-(def prompt-symbol "> ")
-
 (defn- parse-command [command]
     (if-not command
         ["quit"]
@@ -11,8 +9,7 @@
 
 (defn prompt [state]
     (println state) ; TODO: remove
-    (print (str (:prompt-prefix state) prompt-symbol))
-    (flush)
+    (state/print-prompt)
     (let [parts (parse-command (read-line))
           command (first parts)
           params (cons state (rest parts))

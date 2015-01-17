@@ -12,12 +12,14 @@
     (let [deck (decks/get-deck decktype)]
         (when (and (not (server/started?)) deck)
             (server/start-server)
-            {:name gamename
-             :prompt-prefix (str gamename "@local")
-             :playercount (read-string players)
-             :players (list (:username state)) ; maybe username@host ?
-             :joined 1
-             :deck (shuffle deck)})))
+            {:local
+              {:prompt-prefix gamename}
+             :game
+              {:name gamename
+               :playercount (read-string players)
+               :players (list (-> state :local :username)) ; maybe username@host ?
+               :joined 1
+               :deck (shuffle deck)}})))
 
 (defn- get-rest [v n]
     (if (> n (count v))
@@ -28,16 +30,17 @@
 (defn deal [state cardcount]
     (if-not (state/game-full? state)
         (println "Waiting for more players. Can't deal cards yet.")
-        (let [number-of-cards-to-deal (* (read-string cardcount) (:playercount state))
-              dealt-cards (take number-of-cards-to-deal (:deck state))
-              rest-deck (get-rest (:deck state) number-of-cards-to-deal)]
+        (let [deck (-> state :game :deck)
+              number-of-cards-to-deal (* (read-string cardcount) (-> state :game :playercount))
+              dealt-cards (take number-of-cards-to-deal deck)
+              rest-deck (get-rest deck number-of-cards-to-deal)]
             (println "Deal " dealt-cards)
-            {:deck rest-deck})))
+            {:game {:deck rest-deck}})))
 
 (defn join [state hostname]
     (if (server/started?)
         (println "Can not join a game when a local server is started.")
-        (do (client/connect hostname (:username state)) {})))
+        (do (client/connect hostname (-> state :local :username)) {})))
 
 (defn quit [state]
     (when (server/started?)

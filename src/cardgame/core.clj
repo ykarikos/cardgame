@@ -10,4 +10,4 @@
   [& args]
   (if (< (count args) 1)
     (println usage)
-    (prompt/prompt (state/change-state {:username (first args)}))))
+    (prompt/prompt (state/initial-state (first args)))))

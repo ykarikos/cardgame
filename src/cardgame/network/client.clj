@@ -1,5 +1,5 @@
 (ns cardgame.network.client
-    (:require [cardgame.network.server :as server]
+    (:require [cardgame.network.core :as net]
               [cardgame.state :as state]
               [manifold.stream :as s]
               [aleph.http :as http]
@@ -7,29 +7,20 @@
 
 (def connection (atom nil))
 
-(defn- execute [command params]
-  (println (:msg params))
-  (case command
-      "quit" (s/close! @connection)
-      "state" (state/change-state (:state params))))
+(defn- execute [data]
+  (let [params (:params data)]
+    (case (:command data)
+      "quit" (s/close! @@connection)
+      "state" (state/change-state params))))
 
-(defn- parse-json [s]
-    (try
-        (json/read-str s :key-fn keyword)
-        (catch Exception e {})))
-
-(defn- consumer [data]
-  (let [json-data (parse-json data)
-        command (:command json-data)
-        params (:params json-data)]
-    (execute command params)))
-
-(defn send-message [command params]
+(defn send-message [data]
   (when-not (s/closed? @@connection)
-    (server/send-message @@connection command params)))
+    (net/send-message @@connection data)))
 
 (defn connect [hostname username]
     (do
-        (reset! connection (http/websocket-client (str "ws://" hostname ":" server/port)))
-        (s/consume consumer @@connection)
-        (send-message "join" username)))
+        (reset! connection (http/websocket-client (str "ws://" hostname ":" net/port)))
+        (s/consume (net/get-consumer execute) @@connection)
+        (send-message {:command "join"
+                       :msg (str username " joins the game.")
+                       :params username})))

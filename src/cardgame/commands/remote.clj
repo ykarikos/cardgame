@@ -1,5 +1,5 @@
 (ns cardgame.commands.remote
-    "Commands that can be issued remotely."
+    "Commands that can be issued remotely. Commands return the data that will be sent back."
     (:require [cardgame.state :as state]))
 
 (defn join [username]
@@ -7,5 +7,5 @@
         {:msg "Game full. Can not join."}
         {:command "state"
          :msg "Joined."
-         :state (state/join-player username)}))
+         :params (state/join-player username)}))
 
