@@ -2,7 +2,7 @@
   "The french deck")
 
 (def values "A23456789TJQK")
-(def suits "♠♡♢♣")
+(def suits "♠♥♦♣")
 
 (defn- cart [colls]
   (if (empty? colls)
