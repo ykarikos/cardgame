@@ -12,9 +12,7 @@
     (let [deck (decks/get-deck decktype)]
         (when (and (not (server/started?)) deck)
             (server/start-server)
-            {:local
-              {:prompt-prefix gamename}
-             :game
+            {:game
               {:name gamename
                :playercount (read-string players)
                :players (list (-> state :local :username)) ; maybe username@host ?

@@ -11,7 +11,6 @@
 (declare send-message)
 
 (defn- execute [data]
-  (println "received" data)
   (let [params (:params data)]
     (case (:command data)
         "join" (send-message (cmd/join params)))))

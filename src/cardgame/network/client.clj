@@ -11,7 +11,7 @@
   (let [params (:params data)]
     (case (:command data)
       "quit" (s/close! @@connection)
-      "state" (state/change-state params))))
+      "state" (state/change-game-state params))))
 
 (defn send-message [data]
   (when-not (s/closed? @@connection)

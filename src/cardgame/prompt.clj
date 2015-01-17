@@ -7,13 +7,14 @@
         ["quit"]
         (clojure.string/split command #" ")))
 
-(defn prompt [state]
-    (println state) ; TODO: remove
+(defn prompt []
+    (println @state/state) ; TODO: remove
     (state/print-prompt)
     (let [parts (parse-command (read-line))
           command (first parts)
-          params (cons state (rest parts))
-          new-state (if (empty? command) state (cmd/execute command params))]
+          params (cons @state/state (rest parts))
+          new-state (if (empty? command) @state/state (cmd/execute command params))]
         (when-not (= "quit" command)
-            (recur (state/change-state new-state)))))
+            (state/change-state new-state)
+            (recur))))
 

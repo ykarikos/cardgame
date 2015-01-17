@@ -1,11 +1,11 @@
 (ns cardgame.state
     "The state format:
-{:local {:prompt-prefix \"evening bridge\"
-         :username \"John\" }
- :game {:playercount 2
+{:local {:username \"John\"}
+ :game {:name \"evening bridge\"
+        :playercount 2
         :joined 1
         :players (\"John\")
-        :deck (\"A♠8♡6♢K♣\")}
+        :deck [\"A♠8♡6♢K♣\"]}
 }")
 
 (def prompt-symbol "> ")
@@ -35,8 +35,8 @@
             {:game (merge (:game @state)
                 {:joined (+ 1 (-> @state :game :joined))
                  :players (cons username (-> @state :game :players))})}]
-        (dissoc (swap! state merge new-state) :local)))
+        (:game (swap! state merge new-state))))
 
 (defn print-prompt []
-    (print (str (-> @state :local :prompt-prefix) prompt-symbol))
+    (print (str (-> @state :game :name) prompt-symbol))
     (flush))
