@@ -3,9 +3,9 @@
 {:command \"state\"
  :msg \"Joined.\"}
  :params {:game {:playercount 2
-          :joined 1
-          :players (\"John\")
-          :deck (\"A♠8♡6♢K♣\")}
+                 :joined 1
+                 :players (\"John\")
+                 :deck (\"A♠8♡6♢K♣\")}}
 "
     (:require [manifold.stream :as s]
               [cardgame.state :as state]

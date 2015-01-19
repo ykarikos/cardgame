@@ -33,16 +33,36 @@ Supported deck types: french")
         []
         (subvec v n)))
 
-; TODO: select cards for each player one-by-one
-(defn deal [state cardcount]
+(defn- take-cards [deck cardcount playercount]
+  (fn [skip]
+    (take cardcount (take-nth playercount (get-rest deck skip)))))
+
+(defn- send-message [data]
+  (if (server/started?)
+    (server/send-message data)
+    (when-not (client/closed?)
+      (client/send-message data))))
+
+(defn- deal-remote [username]
+  (fn [cards]
+    (send-message {:command "state"
+                   :msg (str username " dealt " cards)
+                   :local {:hand cards}})))
+
+(defn deal [state cardcount-param]
     (if-not (state/game-full? state)
         (println "Waiting for more players. Can't deal cards yet.")
         (let [deck (-> state :game :deck)
-              number-of-cards-to-deal (* (read-string cardcount) (-> state :game :playercount))
-              dealt-cards (take number-of-cards-to-deal deck)
+              playercount (-> state :game :playercount)
+              cardcount (read-string cardcount-param)
+              number-of-cards-to-deal (* cardcount playercount)
+              dealt-cards (map (take-cards deck cardcount playercount) (range playercount))
               rest-deck (get-rest deck number-of-cards-to-deal)]
-            (println "Deal " dealt-cards)
-            {:game {:deck rest-deck}})))
+            (dorun (map (deal-remote (-> state :local :username)) (take (- playercount 1) dealt-cards)))
+            {:local
+              {:hand (into (-> state :local :hand) (last dealt-cards))}
+             :game
+              {:deck rest-deck}})))
 
 (defn join [state hostname]
     (if (server/started?)
@@ -50,8 +70,8 @@ Supported deck types: french")
         (do (client/connect hostname (-> state :local :username)) {})))
 
 (defn quit [state]
-    (when (server/started?)
-        (server/terminate-server)))
+    (server/terminate-server)
+    (client/close-connection))
 
 (defn execute [command params]
     "Execute given command if it is found in local namespace with a correct arity. Return the new state."

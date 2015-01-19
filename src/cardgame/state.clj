@@ -15,13 +15,11 @@
 (defn initial-state [username]
     (swap! state merge
       {:local
-        {:username username}}))
+        {:hand []
+         :username username}}))
 
 (defn change-state [new-state]
     (swap! state merge new-state))
-
-(defn change-game-state [new-game-state]
-    (swap! state merge {:game new-game-state}))
 
 (defn game-full?
     ([] (game-full? @state))
@@ -35,7 +33,7 @@
             {:game (merge (:game @state)
                 {:joined (+ 1 (-> @state :game :joined))
                  :players (cons username (-> @state :game :players))})}]
-        (:game (swap! state merge new-state))))
+        (swap! state merge new-state)))
 
 (defn print-prompt []
     (print (str (-> @state :game :name) prompt-symbol))

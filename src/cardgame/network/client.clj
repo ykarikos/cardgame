@@ -7,15 +7,23 @@
 
 (def connection (atom nil))
 
+(defn closed? []
+  (or (= @connection nil)
+    (s/closed? @@connection)))
+
+(defn send-message [data]
+  (when-not (closed?)
+    (net/send-message @@connection data)))
+
+(defn close-connection []
+  (when-not (closed?)
+    (reset! connection (s/close! @@connection))))
+
 (defn- execute [data]
   (let [params (:params data)]
     (case (:command data)
-      "quit" (s/close! @@connection)
-      "state" (state/change-game-state params))))
-
-(defn send-message [data]
-  (when-not (s/closed? @@connection)
-    (net/send-message @@connection data)))
+      "quit" (close-connection)
+      "state" (state/change-state params))))
 
 (defn connect [hostname username]
     (do

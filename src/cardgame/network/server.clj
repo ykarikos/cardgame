@@ -1,6 +1,7 @@
 (ns cardgame.network.server
     (:require [cardgame.commands.remote :as cmd]
               [cardgame.network.core :as net]
+              [cardgame.state :as state]
               [clojure.data.json :as json]
               [manifold.stream :as s]
               [aleph.http :as http]))
@@ -13,7 +14,8 @@
 (defn- execute [data]
   (let [params (:params data)]
     (case (:command data)
-        "join" (send-message (cmd/join params)))))
+        "join" (send-message (cmd/join params))
+        "state" (state/change-state params))))
 
 (defn- handler [req]
   (let [net @(http/websocket-connection req)]
