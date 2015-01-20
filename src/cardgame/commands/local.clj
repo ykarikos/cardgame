@@ -44,11 +44,12 @@ Supported deck types: french")
     (when-not (client/closed?)
       (client/send-message data))))
 
-(defn- deal-remote [username]
+(defn- deal-remote [deck username]
   (fn [cards]
     (send-message {:command "state"
                    :msg (str username " dealt you " (string/join ", " cards))
-                   :local {:hand cards}})))
+                   :params {:game {:deck deck}
+                            :local {:hand cards}}})))
 
 (defn deal [state cardcount-param]
     (if-not (state/game-full? state)
@@ -59,8 +60,8 @@ Supported deck types: french")
               number-of-cards-to-deal (* cardcount playercount)
               dealt-cards (map (take-cards deck cardcount playercount) (range playercount))
               rest-deck (get-rest deck number-of-cards-to-deal)]
-            (dorun (map (deal-remote (-> state :local :username)) (take (- playercount 1) dealt-cards)))
-            (state/print-msg "You were dealt " (string/join ", " (last dealt-cards)))
+            (dorun (map (deal-remote rest-deck (-> state :local :username)) (take (- playercount 1) dealt-cards)))
+            (state/print-msg (str "You were dealt " (string/join ", " (last dealt-cards))))
             {:local
               {:hand (into (-> state :local :hand) (last dealt-cards))}
              :game

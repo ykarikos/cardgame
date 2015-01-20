@@ -31,10 +31,9 @@
 
 (defn join-player [username]
     (let [new-state
-            {:game (merge (:game @state)
-                {:joined (+ 1 (-> @state :game :joined))
-                 :players (cons username (-> @state :game :players))})}]
-        (dissoc (swap! state merge new-state)) :local))
+            {:game {:joined (+ 1 (-> @state :game :joined))
+                    :players (cons username (-> @state :game :players))}}]
+        (dissoc (change-state new-state) :local)))
 
 (defn print-prompt []
     (print (str (-> @state :game :name) prompt-symbol))
