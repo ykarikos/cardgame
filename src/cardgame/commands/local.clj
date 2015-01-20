@@ -3,7 +3,8 @@
     (:require [cardgame.decks.core :as decks]
               [cardgame.state :as state]
               [cardgame.network.server :as server]
-              [cardgame.network.client :as client]))
+              [cardgame.network.client :as client]
+              [clojure.string :as string]))
 
 ; TODO
 (defn help [state]
@@ -46,7 +47,7 @@ Supported deck types: french")
 (defn- deal-remote [username]
   (fn [cards]
     (send-message {:command "state"
-                   :msg (str username " dealt " cards)
+                   :msg (str username " dealt you " (string/join ", " cards))
                    :local {:hand cards}})))
 
 (defn deal [state cardcount-param]
@@ -59,6 +60,7 @@ Supported deck types: french")
               dealt-cards (map (take-cards deck cardcount playercount) (range playercount))
               rest-deck (get-rest deck number-of-cards-to-deal)]
             (dorun (map (deal-remote (-> state :local :username)) (take (- playercount 1) dealt-cards)))
+            (state/print-msg "You were dealt " (string/join ", " (last dealt-cards)))
             {:local
               {:hand (into (-> state :local :hand) (last dealt-cards))}
              :game

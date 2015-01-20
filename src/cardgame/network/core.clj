@@ -20,16 +20,11 @@
         (json/read-str s :key-fn keyword)
         (catch Exception e {})))
 
-(defn- print-msg [message]
-    (when message
-        (println (str "\n" message))
-        (state/print-prompt)))
-
 (defn get-consumer [executor]
     (fn [data]
 ;        (println "received" data)
         (let [json-data (parse-json data)]
-            (print-msg (:msg json-data))
+            (state/print-msg (:msg json-data))
             (executor json-data))))
 
 (defn send-message [connection data]
