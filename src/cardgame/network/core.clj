@@ -5,7 +5,7 @@
  :params {:game {:playercount 2
                  :joined 1
                  :players (\"John\")
-                 :deck (\"A♠8♡6♢K♣\")}}
+                 :deck [\"♠A\" \"♥9\" \"♦6\" \"♣K\"]}}
 "
     (:require [manifold.stream :as s]
               [cardgame.state :as state]

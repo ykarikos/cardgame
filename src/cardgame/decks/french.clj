@@ -12,19 +12,19 @@
       (cons x more))))
 
 (defn is-spade? [card]
-    (= \♠ (first card)))
+    (= \♠ (second card)))
 
 (defn is-diamonds? [card]
-    (= \♢ (first card)))
+    (= \♦ (second card)))
 
 (defn is-clubs? [card]
-    (= \♣ (first card)))
+    (= \♣ (second card)))
 
 (defn is-hearts? [card]
-    (= \♡ (first card)))
+    (= \♥ (second card)))
 
 (defn numeral-value [card]
-    (let [val (subs card 1)]
+    (let [val (subs card 0 1)]
         (case val
             "A" 1
             "T" 10
@@ -34,5 +34,5 @@
             (read-string val))))
 
 (defn get-deck []
-    (map #(reduce str %) (cart (list suits values))))
+    (map #(reduce str %) (cart (list values suits))))
 
