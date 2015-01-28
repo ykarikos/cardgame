@@ -19,9 +19,16 @@
         {:hand []
          :username username}}))
 
-; TODO: local hand can only get more cards? -> different function?
+(defn- merge-state [state new-state]
+    (let [new-hand (-> new-state :local :hand)
+          new-game (:game new-state)
+          combined-hand (into (-> state :local :hand) new-hand)] ; TODO sort hand
+        {:local (merge (:local state) {:hand combined-hand})
+         :game (merge (:game state) new-game)}))
+
 (defn change-state [new-state]
-    (swap! state #(merge-with merge %1 %2) new-state))
+  (println "new state" new-state)
+  (swap! state merge-state new-state))
 
 (defn game-full? []
     (let [playercount (-> @state :game :playercount)

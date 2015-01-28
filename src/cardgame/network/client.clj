@@ -23,7 +23,7 @@
   (let [params (:params data)]
     (case (:command data)
       "quit" (close-connection)
-      "state" (state/change-state params))))
+      "state" (do (println "received" params) (state/change-state params)))))
 
 (defn connect [hostname username]
     (do
