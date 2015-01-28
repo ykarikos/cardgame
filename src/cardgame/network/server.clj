@@ -15,7 +15,7 @@
   (let [params (:params data)]
     (case (:command data)
         "join" (send-message (cmd/join params))
-        "state" (state/change-state params))))
+        "deal" (send-message (cmd/deal (:username params) (:cardcount params))))))
 
 (defn- handler [req]
   (let [net @(http/websocket-connection req)]

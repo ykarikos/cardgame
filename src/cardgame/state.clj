@@ -19,15 +19,14 @@
         {:hand []
          :username username}}))
 
+; TODO: local hand can only get more cards? -> different function?
 (defn change-state [new-state]
     (swap! state #(merge-with merge %1 %2) new-state))
 
-(defn game-full?
-    ([] (game-full? @state))
-    ([state]
-        (let [playercount (-> state :game :playercount)
-              joined (-> state :game :joined)]
-            (and joined playercount (= joined playercount)))))
+(defn game-full? []
+    (let [playercount (-> @state :game :playercount)
+          joined (-> @state :game :joined)]
+        (and joined playercount (= joined playercount))))
 
 (defn join-player [username]
     (let [new-state

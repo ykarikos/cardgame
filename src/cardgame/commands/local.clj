@@ -4,9 +4,9 @@
               [cardgame.state :as state]
               [cardgame.network.server :as server]
               [cardgame.network.client :as client]
+              [cardgame.commands.remote :as remote]
               [clojure.string :as string]))
 
-; TODO
 (defn help [state]
   (println "Commands:
 - create-game gamename playercount decktype
@@ -17,6 +17,15 @@
 
 Supported deck types: french")
   {})
+
+(defn- message
+  ([command params]
+    {:command command
+     :params params})
+  ([command msg params]
+    {:command command
+     :msg msg
+     :params params}))
 
 (defn create-game [state gamename players decktype]
     (let [deck (decks/get-deck decktype)]
@@ -29,14 +38,6 @@ Supported deck types: french")
                :joined 1
                :deck (shuffle deck)}})))
 
-(defn- get-rest [v n]
-    (if (> n (count v))
-        []
-        (subvec v n)))
-
-(defn- take-cards [deck cardcount playercount]
-  (fn [skip]
-    (take cardcount (take-nth playercount (get-rest deck skip)))))
 
 (defn- send-message [data]
   (if (server/started?)
@@ -46,26 +47,21 @@ Supported deck types: french")
 
 (defn- deal-remote [deck username]
   (fn [cards]
-    (send-message {:command "state"
-                   :msg (str username " dealt you " (string/join ", " cards))
-                   :params {:game {:deck deck}
-                            :local {:hand cards}}})))
+    (send-message (message "state"
+                           (str username " dealt you " (string/join ", " cards))
+                           {:game {:deck deck}
+                            :local {:hand cards}}))))
 
 (defn deal [state cardcount-param]
-    (if-not (state/game-full? state)
-        (println "Waiting for more players. Can't deal cards yet.")
-        (let [deck (-> state :game :deck)
-              playercount (-> state :game :playercount)
-              cardcount (read-string cardcount-param)
-              number-of-cards-to-deal (* cardcount playercount)
-              dealt-cards (map (take-cards deck cardcount playercount) (range playercount))
-              rest-deck (get-rest deck number-of-cards-to-deal)]
-            (dorun (map (deal-remote rest-deck (-> state :local :username)) (take (- playercount 1) dealt-cards)))
-            (state/print-msg (str "You were dealt " (string/join ", " (last dealt-cards))))
-            {:local
-              {:hand (into (-> state :local :hand) (last dealt-cards))}
-             :game
-              {:deck rest-deck}})))
+  (let [username (-> state :local :username)
+        cardcount (read-string cardcount-param)]
+    (if-not (state/game-full?)
+      (println "Waiting for more players. Can't deal cards yet.")
+      (do
+        (if (server/started?)
+          (send-message (remote/deal username cardcount))
+          (send-message (message "deal" {:username username :cardcount cardcount}))))))
+        {})
 
 (defn join [state hostname]
     (if (server/started?)
