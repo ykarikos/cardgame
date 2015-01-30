@@ -12,18 +12,19 @@ Card game platform for playing any card game remotely. Does not enforce any rule
 
 Upon startup the engine starts to listen a specific default port.
 
-    > create-game [name] [number-of-players] [decktype]
-
-    gamename@localhost> deal [number-of-cards]
-Dealing is allowed only if all players have joined. Without `number-of-cards`, all of the cards are dealt. (How to specify cards dealt on table?)
+    > create-game [gamename] [number-of-players] [decktype]
+    Server started.
+    gamename> deal [number-of-cards]
+    [username] dealt you 7♠, A♥
+Dealing is allowed only if all players have joined.
 
 
 ### Remote commands
 
-    > connect [host]
-    @host> list-games
-    @host> join-game [name]
-
+    > join [hostname]
+    Joined.
+    gamename> deal [number-of-cards]
+    [username] dealt you J♣, 9♣
 
 ## License
 
