@@ -1,5 +1,5 @@
 (ns cardgame.commands.local
-    "Commands that can be issued in the prompt. The first parameter of each command is the current game state. Each command should return the new state."
+    "Commands that can be issued in the prompt. The first parameter of each command is the current game state."
     (:require [cardgame.decks.core :as decks]
               [cardgame.state :as state]
               [cardgame.network.server :as server]
@@ -15,8 +15,7 @@
 - quit
 - help
 
-Supported deck types: french")
-  {})
+Supported deck types: french"))
 
 (defn- message
   ([command params]
@@ -31,12 +30,13 @@ Supported deck types: french")
     (let [deck (decks/get-deck decktype)]
         (when (and (not (server/started?)) deck)
             (server/start-server)
-            {:game
-              {:name gamename
-               :playercount (read-string players)
-               :players (list (-> state :local :username)) ; maybe username@host ?
-               :joined 1
-               :deck (shuffle deck)}})))
+            (state/change-state
+                {:game
+                  {:name gamename
+                   :playercount (read-string players)
+                   :players (list (-> state :local :username))
+                   :joined 1
+                   :deck (shuffle deck)}}))))
 
 
 (defn- send-message [data]
@@ -57,23 +57,21 @@ Supported deck types: french")
         cardcount (read-string cardcount-param)]
     (if-not (state/game-full?)
       (println "Waiting for more players. Can't deal cards yet.")
-      (do
-        (if (server/started?)
-          (send-message (remote/deal username cardcount))
-          (send-message (message "deal" {:username username :cardcount cardcount}))))))
-        {})
+      (if (server/started?)
+        (send-message (remote/deal username cardcount))
+        (send-message (message "deal" {:username username :cardcount cardcount}))))))
 
 (defn join [state hostname]
     (if (server/started?)
         (println "Can not join a game when a local server is started.")
-        (do (client/connect hostname (-> state :local :username)) {})))
+        (client/connect hostname (-> state :local :username))))
 
 (defn quit [state]
     (server/terminate-server)
     (client/close-connection))
 
 (defn execute [command params]
-    "Execute given command if it is found in local namespace with a correct arity. Return the new state."
+    "Execute given command if it is found in local namespace with a correct arity."
     (let [command-fun (resolve (symbol "cardgame.commands.local" command))
           arities (->> command-fun meta :arglists (map count))]
         (if-not command-fun

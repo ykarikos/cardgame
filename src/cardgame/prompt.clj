@@ -12,9 +12,9 @@
     (state/print-prompt)
     (let [parts (parse-command (read-line))
           command (first parts)
-          params (cons @state/state (rest parts))
-          new-state (if (empty? command) {} (cmd/execute command params))]
+          params (cons @state/state (rest parts))]
+        (when-not (empty? command)
+          (cmd/execute command params))
         (when-not (= "quit" command)
-            (state/change-state new-state)
             (recur))))
 
