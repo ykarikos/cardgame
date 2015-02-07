@@ -27,7 +27,7 @@
          :game (merge (:game state) new-game)}))
 
 (defn change-state [new-state]
-  (println "new state" new-state)
+;  (println "new state" new-state)
   (swap! state merge-state new-state))
 
 (defn game-full? []
@@ -36,10 +36,11 @@
         (and joined playercount (= joined playercount))))
 
 (defn join-player [username]
-    (let [new-state
+    (let [state-change
             {:game {:joined (+ 1 (-> @state :game :joined))
-                    :players (cons username (-> @state :game :players))}}]
-        (dissoc (change-state new-state) :local)))
+                    :players (cons username (-> @state :game :players))}}
+          new-game-state (:game (change-state state-change))]
+        {:game (dissoc new-game-state :deck)}))
 
 (defn print-prompt []
     (print (str (-> @state :game :name) prompt-symbol))

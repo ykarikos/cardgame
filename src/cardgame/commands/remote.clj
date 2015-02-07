@@ -21,10 +21,10 @@
 (defn- deal-message [username cards]
     (str username " dealt you " (clojure.string/join ", " cards)))
 
-(defn- deal-state-message [username cards rest-deck-state]
+(defn- deal-state-message [username cards]
     {:command "state"
      :msg (deal-message username cards)
-     :params (merge {:local {:hand cards}} rest-deck-state)})
+     :params {:local {:hand cards}}})
 
 (defn deal [username cardcount]
     "This function is run only on the server. It deals cards to all players,
@@ -40,4 +40,4 @@
         ; TODO: support >2 players
         (state/change-state (merge {:local {:hand server-cards}} rest-deck-state))
         (state/print-msg (deal-message username server-cards))
-        (deal-state-message username others-cards rest-deck-state)))
+        (deal-state-message username others-cards)))
